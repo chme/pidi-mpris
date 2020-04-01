@@ -7,13 +7,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 from .mpris import find_available_players, MPRIS
 from .display import Display
-
-
-def on_player_update():
-    global display, player
-    artUrl = player.artUrl()
-    if artUrl.startswith('file://'):
-        display.set(artUrl[len('file://'):])
+from .buttons import Buttons, Button
 
 
 def end(_signal, _frame):
@@ -22,33 +16,75 @@ def end(_signal, _frame):
     loop.quit()
 
 
-if __name__ == '__main__':
-    DBusGMainLoop(set_as_default=True)
+def on_player_update():
+    global display, player
 
+    artUrl = player.artUrl()
+    if artUrl.startswith('file://'):
+        display.set(artUrl[len('file://'):])
+
+
+def on_button_pressed(button):
+    global player
+
+    print("Button press detected: {}".format(button))
+
+    if button == Button.A:
+        player.previous()
+    elif button == Button.B:
+        player.next()
+    elif button == Button.X:
+        pass
+    elif button == Button.Y:
+        player.playPause()
+
+
+def parse_arguments():
     parser = argparse.ArgumentParser(description="Pirate Audio MPRIS")
     parser.add_argument('-n', '--name', default=None,
                         help="Bus name of the media player (has to start with 'org.mpris.MediaPlayer2.')")
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def find_mpris_bus_name(arg_bus_name):
     mpris_players = find_available_players()
-    bus_name = args.name
-    if bus_name is None and len(mpris_players) > 0:
-        bus_name = mpris_players[0]
 
-    if bus_name is None or bus_name not in mpris_players:
-        print("Unable to find MPRIS player '{}'".format(bus_name))
+    if arg_bus_name is None:
+        if len(mpris_players) > 0:
+            return mpris_players[0]
+        return None
+
+    if arg_bus_name in mpris_players:
+        return arg_bus_name
+    return None
+
+
+if __name__ == '__main__':
+    DBusGMainLoop(set_as_default=True)
+
+    args = parse_arguments()
+
+    bus_name = find_mpris_bus_name(args.name)
+    if bus_name is None:
+        print("Unable to find MPRIS player '{}'".format(args.name))
         sys.exit(1)
 
     print("Connecting to MPRIS player '{}'".format(bus_name))
 
     player = MPRIS(bus_name)
-    player.updateHandler = on_player_update
+    player.setUpdateHandler(on_player_update)
 
     display = Display()
     on_player_update()
 
+    buttons = Buttons()
+    buttons.setButtonHandler(on_button_pressed)
+
     signal.signal(signal.SIGINT, end)
 
-    loop = GLib.MainLoop()
-    loop.run()
+    try:
+        loop = GLib.MainLoop()
+        loop.run()
+    finally:
+        buttons.cleanup()

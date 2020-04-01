@@ -30,6 +30,9 @@ class MPRIS:
             if self.updateHandler:
                 self.updateHandler()
 
+    def setUpdateHandler(self, cb):
+        self.updateHandler = cb
+
     def playPause(self):
         self.interface.PlayPause()
 
