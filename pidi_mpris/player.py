@@ -16,6 +16,7 @@ from .buttons import Buttons, Button
 DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
 
 DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-unsplash.png'
+DEFAULT_FONT_PATH = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
 
 
 def end(_signal, _frame):
@@ -34,9 +35,9 @@ def on_player_update():
 
     artUrl = mpris_player.artUrl()
     if artUrl.startswith('file://'):
-        display.set(artUrl[len('file://'):])
+        display.imageFile(artUrl[len('file://'):])
     else:
-        display.set(conf.get('default_image'))
+        display.imageFile(conf.get('default_image'))
 
 
 def on_button_pressed(button):
@@ -76,7 +77,8 @@ def read_conf(conf_file):
     print("Configuration file: {}".format(conf_file))
 
     conf = configparser.ConfigParser(defaults={
-        'default_image': DEFAULT_IMAGE_PATH
+        'default_image': DEFAULT_IMAGE_PATH,
+        'default_font': DEFAULT_FONT_PATH
     })
     conf.read(conf_file)
     return conf
@@ -117,7 +119,7 @@ def main():
 
     print("Initializing display")
 
-    display = Display()
+    display = Display(conf.get('default_font'))
 
     print("Initializing buttons: {}".format(list(Button)))
 
