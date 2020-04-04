@@ -18,11 +18,11 @@ setup(name='pidi-mpris',
       data_files=[
           ('/usr/share/pidi-mpris/images', [
               'data/images/luana-de-marco-PF1l1F1hzoU-unsplash.png',
-              'data/images/LICENCE.txt'
+              'data/images/LICENSE.txt'
           ]),
           ('/usr/share/pidi-mpris/fonts/OpenSans', [
               'data/fonts/OpenSans/OpenSans-Regular.ttf',
-              'data/fonts/OpenSans/LICENCE.txt'
+              'data/fonts/OpenSans/LICENSE.txt'
           ])
       ],
       python_requires='>=3.6')
