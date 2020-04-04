@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import argparse
 import signal
 import sys
@@ -67,7 +69,9 @@ def find_mpris_bus_name(arg_bus_name):
     return None
 
 
-if __name__ == '__main__':
+def main():
+    global player, display, buttons, loop
+
     DBusGMainLoop(set_as_default=True)
 
     args = parse_arguments()
@@ -102,3 +106,7 @@ if __name__ == '__main__':
         loop.run()
     finally:
         buttons.cleanup()
+
+
+if __name__ == '__main__':
+    main()

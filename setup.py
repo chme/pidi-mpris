@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='pidi-mpris',
       version='0.0.1',
@@ -11,4 +9,10 @@ setup(name='pidi-mpris',
           "Programming Language :: Python :: 3",
           "License :: OSI Approved :: MIT License",
           "Operating System :: POSIX :: Linux",
-      ])
+      ],
+      entry_points={
+          'console_scripts': [
+              'pidi-mpris=pidi_mpris.player:main'
+          ]
+      },
+      python_requires='>=3.6')

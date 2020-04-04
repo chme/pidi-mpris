@@ -1,0 +1,7 @@
+RPi.GPIO>=0.7.0
+spidev>=3.4
+pillow>=5.4.1
+numpy>=1.16.2
+st7789>=0.0.2
+dbus-python>=1.2.16
+
