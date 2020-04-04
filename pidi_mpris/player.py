@@ -19,32 +19,35 @@ def end(_signal, _frame):
 
 
 def on_player_update():
-    global display, player
+    global display, mpris_player
 
-    print("Player update: {} - {} - {}, artwork={}".format(player.albumArtist(), player.album(), player.title(), player.artUrl()))
+    print("Player update: {} - {} - {}, artwork={}".format(mpris_player.artist(),
+                                                           mpris_player.album(),
+                                                           mpris_player.title(),
+                                                           mpris_player.artUrl()))
 
-    artUrl = player.artUrl()
+    artUrl = mpris_player.artUrl()
     if artUrl.startswith('file://'):
         display.set(artUrl[len('file://'):])
 
 
 def on_button_pressed(button):
-    global player
+    global mpris_player
 
     print("Button press detected: {}".format(button))
 
     if button == Button.A:
         # Top-left button
-        player.previous()
+        mpris_player.previous()
     elif button == Button.B:
         # Bottom-left button
         pass
     elif button == Button.X:
         # Top-right button
-        player.next()
+        mpris_player.next()
     elif button == Button.Y:
         # Bottom-right button
-        player.playPause()
+        mpris_player.playPause()
 
 
 def parse_arguments():
@@ -71,7 +74,7 @@ def find_mpris_bus_name(arg_bus_name):
 
 
 def main():
-    global player, display, buttons, loop
+    global mpris_player, display, buttons, loop
 
     DBusGMainLoop(set_as_default=True)
 
@@ -84,8 +87,8 @@ def main():
 
     print("Connecting to MPRIS player '{}'".format(bus_name))
 
-    player = MPRIS(bus_name)
-    player.setUpdateHandler(on_player_update)
+    mpris_player = MPRIS(bus_name)
+    mpris_player.setUpdateHandler(on_player_update)
 
     print("Initializing display")
 
