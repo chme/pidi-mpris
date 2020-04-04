@@ -19,6 +19,8 @@ def end(_signal, _frame):
 def on_player_update():
     global display, player
 
+    print("Player update: {} - {} - {}, artwork={}".format(player.albumArtist(), player.album(), player.title(), player.artUrl()))
+
     artUrl = player.artUrl()
     if artUrl.startswith('file://'):
         display.set(artUrl[len('file://'):])
@@ -30,13 +32,16 @@ def on_button_pressed(button):
     print("Button press detected: {}".format(button))
 
     if button == Button.A:
-        player.previous()
+        # player.previous()
+        pass
     elif button == Button.B:
-        player.next()
+        # player.next()
+        pass
     elif button == Button.X:
         pass
     elif button == Button.Y:
-        player.playPause()
+        # player.playPause()
+        pass
 
 
 def parse_arguments():
@@ -49,6 +54,8 @@ def parse_arguments():
 
 def find_mpris_bus_name(arg_bus_name):
     mpris_players = find_available_players()
+
+    print("Available MPRIS players: {}".format(mpris_players))
 
     if arg_bus_name is None:
         if len(mpris_players) > 0:
@@ -75,11 +82,18 @@ if __name__ == '__main__':
     player = MPRIS(bus_name)
     player.setUpdateHandler(on_player_update)
 
+    print("Initializing display")
+
     display = Display()
-    on_player_update()
+
+    print("Initializing buttons: {}".format(list(Button)))
 
     buttons = Buttons()
+
+    on_player_update()
     buttons.setButtonHandler(on_button_pressed)
+
+    print("Init complete, press Ctrl+C to exit")
 
     signal.signal(signal.SIGINT, end)
 
