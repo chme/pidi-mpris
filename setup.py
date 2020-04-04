@@ -23,6 +23,7 @@ setup(name='pidi-mpris',
           ('/usr/share/pidi-mpris/fonts/OpenSans', [
               'data/fonts/OpenSans/OpenSans-Regular.ttf',
               'data/fonts/OpenSans/LICENSE.txt'
-          ])
+          ]),
+          ('/etc', ['conf/pidi-mpris.conf'])
       ],
       python_requires='>=3.6')

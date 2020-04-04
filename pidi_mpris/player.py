@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import configparser
 import signal
 import sys
 
@@ -12,6 +13,11 @@ from .display import Display
 from .buttons import Buttons, Button
 
 
+DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
+
+DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-unsplash.png'
+
+
 def end(_signal, _frame):
     global loop
     print('Ctrl+C captured, exiting program.')
@@ -19,7 +25,7 @@ def end(_signal, _frame):
 
 
 def on_player_update():
-    global display, mpris_player
+    global display, mpris_player, conf
 
     print("Player update: {} - {} - {}, artwork={}".format(mpris_player.artist(),
                                                            mpris_player.album(),
@@ -29,6 +35,8 @@ def on_player_update():
     artUrl = mpris_player.artUrl()
     if artUrl.startswith('file://'):
         display.set(artUrl[len('file://'):])
+    else:
+        display.set(conf.get('default_image'))
 
 
 def on_button_pressed(button):
@@ -52,10 +60,26 @@ def on_button_pressed(button):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Pirate Audio MPRIS")
-    parser.add_argument('-n', '--name', default=None,
-                        help="Bus name of the media player (has to start with 'org.mpris.MediaPlayer2.')")
+    parser.add_argument('-n',
+                        '--name',
+                        default=None,
+                        help="DBus name of the media player (has to start with 'org.mpris.MediaPlayer2.')")
+    parser.add_argument('-c',
+                        '--conf',
+                        default=DEFAULT_CONF_FILE_PATH,
+                        help="Path to configuration file")
 
     return parser.parse_args()
+
+
+def read_conf(conf_file):
+    print("Configuration file: {}".format(conf_file))
+
+    conf = configparser.ConfigParser(defaults={
+        'default_image': DEFAULT_IMAGE_PATH
+    })
+    conf.read(conf_file)
+    return conf
 
 
 def find_mpris_bus_name(arg_bus_name):
@@ -74,11 +98,12 @@ def find_mpris_bus_name(arg_bus_name):
 
 
 def main():
-    global mpris_player, display, buttons, loop
+    global mpris_player, display, buttons, loop, conf
 
     DBusGMainLoop(set_as_default=True)
 
     args = parse_arguments()
+    conf = read_conf(args.conf)
 
     bus_name = find_mpris_bus_name(args.name)
     if bus_name is None:
@@ -97,9 +122,9 @@ def main():
     print("Initializing buttons: {}".format(list(Button)))
 
     buttons = Buttons()
+    buttons.setButtonHandler(on_button_pressed)
 
     on_player_update()
-    buttons.setButtonHandler(on_button_pressed)
 
     print("Init complete, press Ctrl+C to exit")
 
