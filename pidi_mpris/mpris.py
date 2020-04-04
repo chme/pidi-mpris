@@ -43,22 +43,22 @@ class MPRIS:
         self.interface.Previous()
 
     def length(self):
-        return self.metadata['mpris:length']
+        return self.metadata.get('mpris:length', 0)
 
     def artUrl(self):
-        return self.metadata['mpris:artUrl']
+        return self.metadata.get('mpris:artUrl', '')
 
     def album(self):
-        return self.metadata['xesam:album']
+        return self.metadata.get('xesam:album', '')
 
     def albumArtist(self):
-        return self.metadata['xesam:albumArtist']
+        return self.metadata.get('xesam:albumArtist', '')
 
     def artist(self):
-        return self.metadata['xesam:artist']
+        return self.metadata.get('xesam:artist', '')
 
     def title(self):
-        return self.metadata['xesam:title']
+        return self.metadata.get('xesam:title', '')
 
 
 def get_bus():
