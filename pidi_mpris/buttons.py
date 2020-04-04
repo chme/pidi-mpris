@@ -27,9 +27,8 @@ class Buttons:
 
         # Buttons connect to ground when pressed, so we should set them up
         # with a "PULL UP", which weakly pulls the input signal to 3.3V.
-        GPIO.setup(Buttons.BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
         for button in Button:
+            GPIO.setup(button.value, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             GPIO.add_event_detect(
                 button.value, GPIO.FALLING, self.onButtonPressed, bouncetime=300)
 
