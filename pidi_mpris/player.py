@@ -34,16 +34,17 @@ def on_button_pressed(button):
     print("Button press detected: {}".format(button))
 
     if button == Button.A:
-        # player.previous()
-        pass
+        # Top-left button
+        player.previous()
     elif button == Button.B:
-        # player.next()
+        # Bottom-left button
         pass
     elif button == Button.X:
-        pass
+        # Top-right button
+        player.next()
     elif button == Button.Y:
-        # player.playPause()
-        pass
+        # Bottom-right button
+        player.playPause()
 
 
 def parse_arguments():
