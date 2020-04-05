@@ -43,6 +43,8 @@ class NowPlayingInfoScreen(Screen):
         self._texts.append(conf['NowPlayingInfoScreen']['line3_text'])
         self._texts.append(conf['NowPlayingInfoScreen']['line4_text'])
 
+        print(self._texts)
+
         self._txtImage = TextImage(self._display.width, self._display.height)
 
     def activate(self) -> None:
@@ -69,7 +71,10 @@ class NowPlayingInfoScreen(Screen):
         album = self._mprisPlayer.album()
         title = self._mprisPlayer.title()
         for i, t in enumerate(self._texts):
-            if not t:
+            if len(t) > 0:
+                print(t)
+                print('template: {}'.format(t))
+                print(t.format(artist=artist, album=album, title=title))
                 self._txtImage.add(
                     t.format(artist=artist, album=album, title=title), self._fonts[i])
 
