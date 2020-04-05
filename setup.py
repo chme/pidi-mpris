@@ -21,7 +21,16 @@ setup(name='pidi-mpris',
               'data/images/LICENSE.txt'
           ]),
           ('/usr/share/pidi-mpris/fonts/OpenSans', [
+              'data/fonts/OpenSans/OpenSans-Bold.ttf',
+              'data/fonts/OpenSans/OpenSans-BoldItalic.ttf',
+              'data/fonts/OpenSans/OpenSans-ExtraBold.ttf',
+              'data/fonts/OpenSans/OpenSans-ExtraBoldItalic.ttf',
+              'data/fonts/OpenSans/OpenSans-Italic.ttf',
+              'data/fonts/OpenSans/OpenSans-Light.ttf',
+              'data/fonts/OpenSans/OpenSans-LightItalic.ttf',
               'data/fonts/OpenSans/OpenSans-Regular.ttf',
+              'data/fonts/OpenSans/OpenSans-SemiBold.ttf',
+              'data/fonts/OpenSans/OpenSans-SemiBoldItalic.ttf',
               'data/fonts/OpenSans/LICENSE.txt'
           ]),
           ('/etc', ['conf/pidi-mpris.conf'])

@@ -33,15 +33,16 @@ class Player:
 
         print('Initializing display')
 
-        self._display = Display(self._conf.get('DEFAULTS', 'default_font'))
+        self._display = Display(self._conf.get('DEFAULT', 'default_font'))
 
         print('Initializing buttons: {}'.format(list(Button)))
 
         self._buttons = Buttons()
         self._buttons.setButtonHandler(self._onButtonPressed)
 
-        self._screens = [ArtworkScreen(self._conf, self._display, self._mprisPlayer), NowPlayingInfoScreen(
-            self._display, self._mprisPlayer)]
+        self._screens = [
+            ArtworkScreen(self._conf, self._display, self._mprisPlayer),
+            NowPlayingInfoScreen(self._conf, self._display, self._mprisPlayer)]
         self._activeScreenIndex = 0
         self._activeScreen = self._screens[self._activeScreenIndex]
         self._activeScreen.activate()
@@ -50,10 +51,10 @@ class Player:
         self._buttons.cleanup()
 
     def _onPlayerUpdate(self):
-        print('Player update: {} - {} - {}, artwork={}'.format(self._mprisPlayer.artist(),
-                                                               self._mprisPlayer.album(),
-                                                               self._mprisPlayer.title(),
-                                                               self._mprisPlayer.artUrl()))
+        print('Player update: {}/{}/{}, artwork={}'.format(','.join(self._mprisPlayer.artist()),
+                                                           self._mprisPlayer.album(),
+                                                           self._mprisPlayer.title(),
+                                                           self._mprisPlayer.artUrl()))
 
         self._activeScreen.onPlayerUpdate()
 
@@ -98,9 +99,25 @@ def parse_arguments():
 def read_conf(conf_file):
     print('Configuration file: {}'.format(conf_file))
 
-    conf = configparser.ConfigParser(defaults={
-        'default_image': DEFAULT_IMAGE_PATH,
-        'default_font': DEFAULT_FONT_PATH
+    conf = configparser.ConfigParser(
+        interpolation=configparser.ExtendedInterpolation())
+    conf.read_dict({
+        'DEFAULT': {
+            'default_image': DEFAULT_IMAGE_PATH,
+            'default_font': DEFAULT_FONT_PATH},
+        'NowPlayingInfoScreen': {
+            'line1_text': '%artist%',
+            'line1_font': '${default_font}',
+            'line1_font_size': '${default_font_size}',
+            'line2_text': '%title%',
+            'line2_font': '${default_font}',
+            'line2_font_size': '${default_font_size}',
+            'line3_text': '%album%',
+            'line3_font': '${default_font}',
+            'line3_font_size': '${default_font_size}',
+            'line4_text': '',
+            'line4_font': '${default_font}',
+            'line4_font_size': '${default_font_size}}'}
     })
     conf.read(conf_file)
     return conf
