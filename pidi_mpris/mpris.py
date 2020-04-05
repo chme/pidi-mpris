@@ -52,10 +52,10 @@ class MPRIS:
         return self.metadata.get('xesam:album', '')
 
     def albumArtist(self):
-        return self.metadata.get('xesam:albumArtist', '')
+        return self.metadata.get('xesam:albumArtist', [])
 
     def artist(self):
-        return self.metadata.get('xesam:artist', '')
+        return self.metadata.get('xesam:artist', [])
 
     def title(self):
         return self.metadata.get('xesam:title', '')

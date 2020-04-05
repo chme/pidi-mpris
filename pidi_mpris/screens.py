@@ -43,7 +43,7 @@ class NowPlayingInfoScreen(Screen):
         self._showInfo()
 
     def _showInfo(self):
-        text = '{}\n{}'.format(self._mprisPlayer.artist(),
+        text = '{}\n{}'.format(', '.join(self._mprisPlayer.artist()),
                                self._mprisPlayer.title())
         self._display.text(text)
 
