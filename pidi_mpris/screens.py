@@ -73,7 +73,7 @@ class NowPlayingInfoScreen(Screen):
                 self._txtImage.add(
                     t.format(artist=artist, album=album, title=title), self._fonts[i])
 
-        self._display.text(self._txtImage.draw())
+        self._display.image(self._txtImage.draw())
 
 
 class ArtworkScreen(Screen):

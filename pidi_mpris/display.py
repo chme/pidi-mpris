@@ -40,7 +40,7 @@ class TextImage:
     def draw(self):
         self._draw.rectangle((0, 0, self._width, self._height), self._bgColor)
 
-        sizes = [t.size() for t in self._texts]
+        sizes = [t.size(self._draw) for t in self._texts]
         txtWidth, txtHeight = reduce(
             lambda a, b: (max(a[0], b[0]), a[1] + b[1]), sizes)
 
@@ -91,6 +91,9 @@ class Display:
 
         self.width = self.disp.width
         self.height = self.disp.height
+
+    def image(self, image):
+        self.disp.display(image)
 
     def imageFile(self, imageFile):
         image = Image.open(imageFile)

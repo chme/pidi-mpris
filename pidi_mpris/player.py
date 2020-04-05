@@ -33,7 +33,7 @@ class Player:
 
         print('Initializing display')
 
-        self._display = Display(self._conf.get('DEFAULT', 'default_font'))
+        self._display = Display()
 
         print('Initializing buttons: {}'.format(list(Button)))
 
@@ -104,7 +104,8 @@ def read_conf(conf_file):
     conf.read_dict({
         'DEFAULT': {
             'default_image': DEFAULT_IMAGE_PATH,
-            'default_font': DEFAULT_FONT_PATH},
+            'default_font': DEFAULT_FONT_PATH,
+            'default_font_size': 30},
         'NowPlayingInfoScreen': {
             'line1_text': '%artist%',
             'line1_font': '${default_font}',
