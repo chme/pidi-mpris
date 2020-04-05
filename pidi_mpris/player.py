@@ -33,7 +33,7 @@ class Player:
 
         print("Initializing display")
 
-        self._display = Display(self._conf.get('default_font'))
+        self._display = Display(self._conf.get('DEFAULTS', 'default_font'))
 
         print("Initializing buttons: {}".format(list(Button)))
 
@@ -117,6 +117,8 @@ def main():
 
     args = parse_arguments()
     conf = read_conf(args.conf)
+
+    print('Config: {}'.format(conf))
 
     bus_name = find_mpris_bus_name(args.name)
     if bus_name is None:

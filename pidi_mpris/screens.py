@@ -4,7 +4,7 @@ from .buttons import Button
 
 class ArtworkScreen:
     def __init__(self, conf, display, mprisPlayer):
-        self._defaultImage = conf.get('default_image')
+        self._defaultImage = conf.get('DEFAULTS', 'default_image')
 
         self._display = display
         self._mprisPlayer = mprisPlayer
@@ -29,7 +29,7 @@ class ArtworkScreen:
         self._showArtwork()
 
     def _showArtwork(self):
-        artUrl = self.mprisPlayer.artUrl()
+        artUrl = self._mprisPlayer.artUrl()
 
         if artUrl.startswith('file://'):
             artUrl = artUrl[len('file://'):]
