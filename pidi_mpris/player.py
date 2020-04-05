@@ -11,7 +11,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 from .buttons import Buttons, Button
 from .display import Display
 from .mpris import find_available_players, MPRIS
-from .screens import ArtworkScreen
+from .screens import ArtworkScreen, NowPlayingInfoScreen
 
 
 DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
@@ -40,8 +40,10 @@ class Player:
         self._buttons = Buttons()
         self._buttons.setButtonHandler(self._onButtonPressed)
 
-        self._activeScreen = ArtworkScreen(
-            self._conf, self._display, self._mprisPlayer)
+        self._screens = [ArtworkScreen(self._conf, self._display, self._mprisPlayer), NowPlayingInfoScreen(
+            self._display, self._mprisPlayer)]
+        self._activeScreenIndex = 0
+        self._activeScreen = self._screens[self._activeScreenIndex]
         self._activeScreen.activate()
 
     def deinit(self):
@@ -59,7 +61,16 @@ class Player:
         print('Button press detected: {}'.format(button))
 
         if button == Button.B:
-            pass
+            if len(self._screens) > 1:
+                self._activeScreen.deactivate()
+                self._activeScreenIndex = (
+                    self._activeScreenIndex + 1) % len(self._screens)
+
+                print('Activate next screen: {}'.format(
+                    self._activeScreenIndex))
+
+                self._activeScreen = self._screens[self._activeScreenIndex]
+                self._activeScreen.activate()
         else:
             self._activeScreen.onButtonPressed(button)
 

@@ -52,8 +52,6 @@ class Display:
             255, 255, 255), align='center', spacing=spacing)
         self.disp.display(self.txtImage)
 
-        pass
-
     def _posX(self, width, align, spacing):
         if align == 'left':
             return spacing

@@ -20,6 +20,34 @@ class Screen:
         pass
 
 
+class NowPlayingInfoScreen(Screen):
+    def __init__(self, display: Display, mprisPlayer: MPRIS) -> None:
+        self._display = display
+        self._mprisPlayer = mprisPlayer
+
+    def activate(self) -> None:
+        self._showInfo()
+
+    def deactivate(self) -> None:
+        pass
+
+    def onButtonPressed(self, button: Button) -> None:
+        if button == Button.A:
+            self._mprisPlayer.previous()
+        elif button == Button.X:
+            self._mprisPlayer.next()
+        elif button == Button.Y:
+            self._mprisPlayer.playPause()
+
+    def onPlayerUpdate(self) -> None:
+        self._showInfo()
+
+    def _showInfo(self):
+        text = '{}\n{}'.format(self._mprisPlayer.artist(),
+                               self._mprisPlayer.title())
+        self._display.text(text)
+
+
 class ArtworkScreen(Screen):
     def __init__(self, conf: dict, display: Display, mprisPlayer: MPRIS) -> None:
         self._defaultImage = conf['DEFAULTS']['default_image']
