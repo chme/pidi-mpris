@@ -11,6 +11,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 from .mpris import find_available_players, MPRIS
 from .display import Display
 from .buttons import Buttons, Button
+from .screens import ArtworkScreen
 
 
 DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
@@ -19,44 +20,54 @@ DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-un
 DEFAULT_FONT_PATH = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
 
 
+class Player:
+    def __init__(self, busName, conf):
+        self._busName = busName
+        self._conf = conf
+
+    def init(self):
+        print("Connecting to MPRIS player '{}'".format(self._busName))
+
+        self._mprisPlayer = MPRIS(self._busName)
+        self._mprisPlayer.setUpdateHandler(self._onPlayerUpdate)
+
+        print("Initializing display")
+
+        self._display = Display(self._conf.get('default_font'))
+
+        print("Initializing buttons: {}".format(list(Button)))
+
+        self._buttons = Buttons()
+        self._buttons.setButtonHandler(self._onButtonPressed)
+
+        self._activeScreen = ArtworkScreen(
+            self._conf, self._display, self._mprisPlayer)
+        self._activeScreen.activate()
+
+    def deinit(self):
+        self._buttons.cleanup()
+
+    def _onPlayerUpdate(self):
+        print("Player update: {} - {} - {}, artwork={}".format(self._mprisPlayer.artist(),
+                                                               self._mprisPlayer.album(),
+                                                               self._mprisPlayer.title(),
+                                                               self._mprisPlayer.artUrl()))
+
+        self._activeScreen.onPlayerUpdate()
+
+    def _onButtonPressed(self, button):
+        print("Button press detected: {}".format(button))
+
+        if button == Button.B:
+            pass
+        else:
+            self._activeScreen.onButtonPressed(button)
+
+
 def end(_signal, _frame):
     global loop
     print('Ctrl+C captured, exiting program.')
     loop.quit()
-
-
-def on_player_update():
-    global display, mpris_player, conf
-
-    print("Player update: {} - {} - {}, artwork={}".format(mpris_player.artist(),
-                                                           mpris_player.album(),
-                                                           mpris_player.title(),
-                                                           mpris_player.artUrl()))
-
-    artUrl = mpris_player.artUrl()
-    if artUrl.startswith('file://'):
-        display.imageFile(artUrl[len('file://'):])
-    else:
-        display.imageFile(conf.get('default_image'))
-
-
-def on_button_pressed(button):
-    global mpris_player
-
-    print("Button press detected: {}".format(button))
-
-    if button == Button.A:
-        # Top-left button
-        mpris_player.previous()
-    elif button == Button.B:
-        # Bottom-left button
-        pass
-    elif button == Button.X:
-        # Top-right button
-        mpris_player.next()
-    elif button == Button.Y:
-        # Bottom-right button
-        mpris_player.playPause()
 
 
 def parse_arguments():
@@ -114,19 +125,8 @@ def main():
 
     print("Connecting to MPRIS player '{}'".format(bus_name))
 
-    mpris_player = MPRIS(bus_name)
-    mpris_player.setUpdateHandler(on_player_update)
-
-    print("Initializing display")
-
-    display = Display(conf.get('default_font'))
-
-    print("Initializing buttons: {}".format(list(Button)))
-
-    buttons = Buttons()
-    buttons.setButtonHandler(on_button_pressed)
-
-    on_player_update()
+    player = Player(bus_name, conf)
+    player.init()
 
     print("Init complete, press Ctrl+C to exit")
 
@@ -136,7 +136,7 @@ def main():
         loop = GLib.MainLoop()
         loop.run()
     finally:
-        buttons.cleanup()
+        player.deinit()
 
 
 if __name__ == '__main__':

@@ -3,6 +3,11 @@ from PIL import Image, ImageDraw, ImageFont
 import ST7789 as ST7789
 
 
+class Screen:
+    def nextFrame(self):
+        pass
+
+
 class Display:
 
     def __init__(self, font):
