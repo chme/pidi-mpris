@@ -118,7 +118,7 @@ def main():
     args = parse_arguments()
     conf = read_conf(args.conf)
 
-    print('Config: {}'.format(conf))
+    print('Configuration: {}'.format({section: dict(conf[section]) for section in conf.sections()}))
 
     bus_name = find_mpris_bus_name(args.name)
     if bus_name is None:
