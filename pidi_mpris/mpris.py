@@ -4,10 +4,10 @@ import re
 
 
 class MPRIS:
-    BUS_NAME_PREFIX = "org.mpris.MediaPlayer2."
-    OBJECT_PATH = "/org/mpris/MediaPlayer2"
-    INTERFACE_PLAYER = "org.mpris.MediaPlayer2.Player"
-    INTERFACE_PROPERTIES = "org.freedesktop.DBus.Properties"
+    BUS_NAME_PREFIX = 'org.mpris.MediaPlayer2.'
+    OBJECT_PATH = '/org/mpris/MediaPlayer2'
+    INTERFACE_PLAYER = 'org.mpris.MediaPlayer2.Player'
+    INTERFACE_PROPERTIES = 'org.freedesktop.DBus.Properties'
 
     def __init__(self, bus_name):
         self.bus_name = bus_name
