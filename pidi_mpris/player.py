@@ -26,7 +26,7 @@ class Player:
         self._conf = conf
 
     def init(self):
-        print('Connecting to MPRIS player {}'.format(self._busName))
+        print('Initializing MPRIS player {}'.format(self._busName))
 
         self._mprisPlayer = MPRIS(self._busName)
         self._mprisPlayer.setUpdateHandler(self._onPlayerUpdate)
