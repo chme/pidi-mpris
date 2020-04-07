@@ -24,7 +24,14 @@ class MPRIS:
 
         self.updateHandler = None
 
+        availablePlayer = self._find_mpris_bus_name(self.bus_name)
+        if availablePlayer:
+            self.connect(availablePlayer)
+
     def nameOwnerChanged(self, name, _oldOwner, newOwner):
+        if not name.startswith(MPRIS.BUS_NAME_PREFIX):
+            return
+
         print('NameOwnerChange: {}/{}/{}'.format(name, _oldOwner, newOwner))
 
         if self.connectedBus:
@@ -36,6 +43,23 @@ class MPRIS:
 
     def _busNameMatches(self, name):
         return (self.bus_name and name == self.bus_name) or (not self.bus_name and name.startswith(MPRIS.BUS_NAME_PREFIX))
+
+    def _find_available_players(self):
+        return list(filter(lambda service: service.startswith(MPRIS.BUS_NAME_PREFIX), self.bus.list_names()))
+
+    def _find_mpris_bus_name(self, arg_bus_name):
+        mpris_players = self._find_available_players()
+
+        print('Available MPRIS players: {}'.format(mpris_players))
+
+        if arg_bus_name is None:
+            if len(mpris_players) > 0:
+                return mpris_players[0]
+            return None
+
+        if arg_bus_name in mpris_players:
+            return arg_bus_name
+        return None
 
     def connect(self, busName):
         print('Connecting to MPRIS player {}'.format(busName))
@@ -108,8 +132,3 @@ def get_bus():
     except dbus.exceptions.DBusException:
         bus = dbus.SystemBus()
     return bus
-
-
-def find_available_players():
-    bus = get_bus()
-    return list(filter(lambda service: service.startswith(MPRIS.BUS_NAME_PREFIX), bus.list_names()))

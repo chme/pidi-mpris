@@ -26,8 +26,6 @@ class Player:
         self._conf = conf
 
     def init(self):
-        print('Initializing MPRIS player {}'.format(self._busName))
-
         self._mprisPlayer = MPRIS(self._busName)
         self._mprisPlayer.setUpdateHandler(self._onPlayerUpdate)
 
@@ -124,21 +122,6 @@ def read_conf(conf_file):
     return conf
 
 
-def find_mpris_bus_name(arg_bus_name):
-    mpris_players = find_available_players()
-
-    print('Available MPRIS players: {}'.format(mpris_players))
-
-    if arg_bus_name is None:
-        if len(mpris_players) > 0:
-            return mpris_players[0]
-        return None
-
-    if arg_bus_name in mpris_players:
-        return arg_bus_name
-    return None
-
-
 def main():
     global mpris_player, display, buttons, loop, conf
 
@@ -150,14 +133,9 @@ def main():
     print('Configuration: {}'.format(
         {section: dict(conf[section]) for section in conf.sections()}))
 
-    bus_name = find_mpris_bus_name(args.name)
-    if bus_name is None:
-        print('Unable to find MPRIS player "{}"'.format(args.name))
-        sys.exit(1)
+    print('Initializing MPRIS player {}'.format(args.name))
 
-    print('Init player')
-
-    player = Player(bus_name, conf)
+    player = Player(args.name, conf)
     player.init()
 
     print('Init complete, press Ctrl+C to exit')
