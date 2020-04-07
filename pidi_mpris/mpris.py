@@ -1,6 +1,5 @@
 
 import dbus
-import re
 
 
 class MPRIS:
@@ -11,6 +10,7 @@ class MPRIS:
 
     def __init__(self, bus_name):
         self.bus_name = bus_name
+        self.connectedBus = None
 
         self.bus = get_bus()
         self.busObject = self.bus.get_object("org.freedesktop.DBus",
@@ -21,16 +21,20 @@ class MPRIS:
         self.updateHandler = None
 
     def nameOwnerChanged(self, name, _oldOwner, newOwner):
-        if name == self.bus_name:
-            if newOwner:
-                self.connect()
-            else:
+        if self.connectedBus:
+            if not newOwner and name == self.connectedBus:
                 self.disconnect()
+        else:
+            if newOwner and self._busNameMatches(name):
+                self.connect(name)
 
-    def connect(self):
-        print('Connecting to MPRIS player {}'.format(self.bus_name))
+    def _busNameMatches(self, name):
+        return (self.bus_name and name == self.bus_name) or (not self.bus_name and name.startswith(MPRIS.BUS_NAME_PREFIX))
 
-        self.mpris = self.bus.get_object(self.bus_name, MPRIS.OBJECT_PATH)
+    def connect(self, busName):
+        print('Connecting to MPRIS player {}'.format(busName))
+
+        self.mpris = self.bus.get_object(busName, MPRIS.OBJECT_PATH)
         self.properties = dbus.Interface(
             self.mpris, MPRIS.INTERFACE_PROPERTIES)
         self.interface = dbus.Interface(self.mpris, MPRIS.INTERFACE_PLAYER)
@@ -40,6 +44,8 @@ class MPRIS:
         self.properties.connect_to_signal(
             'PropertiesChanged', self.propertiesChanged)
 
+        self.connectedBus = busName
+
     def disconnect(self):
         print('Disconnecting from MPRIS player {}'.format(self.bus_name))
 
@@ -47,6 +53,8 @@ class MPRIS:
         self.properties = None
         self.interface = None
         self.metadata = {}
+
+        self.connectedBus = None
 
     def propertiesChanged(self, *args):
         if len(args) > 1 and args[0] == MPRIS.INTERFACE_PLAYER and 'Metadata' in args[1]:
@@ -98,4 +106,4 @@ def get_bus():
 
 def find_available_players():
     bus = get_bus()
-    return list(filter(lambda service: re.match(MPRIS.BUS_NAME_PREFIX, service), bus.list_names()))
+    return list(filter(lambda service: service.startswith(MPRIS.BUS_NAME_PREFIX), bus.list_names()))
