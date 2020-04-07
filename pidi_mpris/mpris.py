@@ -11,6 +11,10 @@ class MPRIS:
     def __init__(self, bus_name):
         self.bus_name = bus_name
         self.connectedBus = None
+        self.mpris = None
+        self.properties = None
+        self.interface = None
+        self.metadata = {}
 
         self.bus = get_bus()
         self.busObject = self.bus.get_object("org.freedesktop.DBus",
@@ -21,6 +25,8 @@ class MPRIS:
         self.updateHandler = None
 
     def nameOwnerChanged(self, name, _oldOwner, newOwner):
+        print('NameOwnerChange: {}/{}/{}'.format(name, _oldOwner, newOwner))
+
         if self.connectedBus:
             if not newOwner and name == self.connectedBus:
                 self.disconnect()
