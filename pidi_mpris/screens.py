@@ -72,8 +72,6 @@ class NowPlayingInfoScreen(Screen):
         title = self._mprisPlayer.title()
         for i, t in enumerate(self._texts):
             if len(t) > 0:
-                print(t)
-                print('template: {}'.format(t))
                 print(t.format(artist=artist, album=album, title=title))
                 self._txtImage.add(
                     t.format(artist=artist, album=album, title=title), self._fonts[i])

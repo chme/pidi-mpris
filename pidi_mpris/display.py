@@ -1,38 +1,73 @@
 
-from functools import reduce
+import textwrap
 
 from PIL import Image, ImageDraw
 import ST7789 as ST7789
 
 
 class Text:
-    def __init__(self, text: str, font, spacing: int = 4) -> None:
+    def __init__(self, text, font, imageDraw, maxWidth=None, align='center', lineSpacing=4, margin=(2, 2), color=(255, 255, 255)):
         self.text = text
         self.font = font
-        self.spacing = spacing
+        self.draw = imageDraw
+        self.align = align
+        self.lineSpacing = lineSpacing
+        self.margin = margin
+        self.color = color
 
-    def size(self, draw: ImageDraw) -> tuple:
-        return draw.textsize(self.text, self.font, spacing=self.spacing)
+        self.width, self.height = self._calcSize(maxWidth)
+
+    def _calcSize(self, maxWidth):
+        width, height = self.draw.textsize(
+            self.text, self.font, spacing=self.lineSpacing)
+
+        if maxWidth and maxWidth > width:
+            avgLetterWidth = width / len(self.text)
+            maxLetter = maxWidth // avgLetterWidth
+
+            wrapper = textwrap.TextWrapper(width=maxLetter)
+            self.text = wrapper.fill(self.text)
+            width, height = self.draw.textsize(
+                self.text, self.font, spacing=self.lineSpacing)
+
+        height = height + self.margin[0] + self.margin[1]
+        return width, height
+
+    def draw(self, x, y, width):
+        posX = x + self._posX(width)
+        posY = y + self.margin[0]
+        self._draw.text((posX, posY), self.text, font=self.font,
+                        fill=self.color, align=self.align, spacing=self.lineSpacing)
+
+    def _posX(self, width):
+        if self.align == 'left':
+            return 0
+        elif self.align == 'right':
+            return width - self.width
+        else:
+            return (width - self.width) // 2
 
 
 class TextImage:
-    def __init__(self, width: int, height: int, align: str = 'center', valign='middle', margin: int = 4, color: tuple = (255, 255, 255), bgColor: tuple = (0, 0, 0)) -> None:
+    def __init__(self, width, height, color=(255, 255, 255), bgColor=(0, 0, 0), valign='middle', margin=4):
         self._width = width
         self._height = height
-        self._align = align
-        self._valign = valign
-        self._margin = margin
         self._color = color
         self._bgColor = bgColor
+        self._valign = valign
+        self._margin = margin
 
         self._texts = []
+        self._innerWidth = self._width - (2 * self._margin)
+        self._innerHeight = self._height - (2 * self._margin)
 
         self._image = Image.new(
             'RGB', (self._width, self._height), color=self._bgColor)
         self._draw = ImageDraw.Draw(self._image)
 
-    def add(self, text: str, font, spacing: int = 4) -> None:
-        self._texts.append(Text(text, font, spacing=spacing))
+    def add(self, text, font):
+        self._texts.append(Text(text, font, self._draw,
+                                maxWidth=self._innerWidth, color=self._color))
 
     def reset(self):
         self._texts = []
@@ -40,40 +75,24 @@ class TextImage:
     def draw(self):
         self._draw.rectangle((0, 0, self._width, self._height), self._bgColor)
 
-        sizes = [t.size(self._draw) for t in self._texts]
-        txtWidth, txtHeight = reduce(
-            lambda a, b: (max(a[0], b[0]), a[1] + b[1]), sizes)
+        posX = self._margin
 
-        innerWidth = self._width - (2 * self._margin)
-        posX = self._posX(innerWidth, txtWidth, self._align) + self._margin
-        innerHeight = self._height - (2 * self._margin)
-        posY = self._posY(innerHeight, txtHeight, self._valign) + self._margin
+        txtHeight = sum(list(map(lambda a: a.height, self._texts)))
+        posY = self._posY(self._innerHeight, txtHeight,
+                          self._valign) + self._margin
 
-        x = posX
-        y = posY
-        for i, t in enumerate(self._texts):
-            x = self._posX(innerWidth, sizes[i][0], self._align) + self._margin
-            self._draw.text((x, y), t.text, font=t.font,
-                            fill=self._color, align=self._align, spacing=t.spacing)
-            y += sizes[i][1]
-
+        for txt in self._texts:
+            txt.draw(posX, posY, self._innerWidth)
+            posY += txt.height
         return self._image
 
-    def _posX(self, width, elemWidth, align):
-        if align == 'left':
-            return 0
-        elif align == 'right':
-            return width - elemWidth
-        else:
-            return (width - elemWidth) // 2
-
-    def _posY(self, height, elemHeight, valign):
+    def _posY(self, height, txtHeight, valign):
         if valign == 'top':
             return 0
         elif valign == 'bottom':
-            return height - elemHeight
+            return height - txtHeight
         else:
-            return (height - elemHeight) // 2
+            return (height - txtHeight) // 2
 
 
 class Display:
