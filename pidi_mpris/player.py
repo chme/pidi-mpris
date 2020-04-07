@@ -10,7 +10,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 
 from .buttons import Buttons, Button
 from .display import Display
-from .mpris import find_available_players, MPRIS
+from .mpris import MPRIS
 from .screens import ArtworkScreen, NowPlayingInfoScreen
 
 

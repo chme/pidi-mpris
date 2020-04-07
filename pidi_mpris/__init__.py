@@ -1,8 +1,5 @@
 
-from .mpris import (
-    find_available_players,
-    MPRIS
-)
+from .mpris import MPRIS
 
 from .display import Display
 
