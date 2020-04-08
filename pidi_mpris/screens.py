@@ -50,7 +50,10 @@ class GifScreen(Screen):
                 image.seek(frame)
                 self._display.image(image)
                 frame += 1
-                run = not self._irq.wait(0.05)
+                duration = 0.05
+                if 'duration' in image.info:
+                    duration = image.info['duration'] / 1000
+                run = not self._irq.wait(duration)
             except EOFError:
                 frame = 0
 
