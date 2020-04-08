@@ -31,14 +31,16 @@ class GifScreen(Screen):
         self._thread = threading.Thread(name='gif', target=self._showGif)
 
     def activate(self):
+        self._irq.clear()
+        self._thread = threading.Thread(name='gif', target=self._showGif)
         self._thread.start()
 
     def deactivate(self):
         self._irq.set()
         self._thread.join()
+        self._thread = None
 
     def _showGif(self):
-        self._irq.clear()
         image = Image.open(self._defaultImage)
 
         run = True
