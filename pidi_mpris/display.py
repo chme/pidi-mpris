@@ -18,25 +18,34 @@ class Text:
         self.width, self.height = self._calcSize(maxWidth)
 
     def _calcSize(self, maxWidth):
+        if len(self.text) == 0:
+            return 0, 0
+
         width, height = self.draw.textsize(
             self.text, self.font, spacing=self.lineSpacing)
 
-        if maxWidth and maxWidth > width:
+        if maxWidth and maxWidth < width:
             avgLetterWidth = width / len(self.text)
             maxLetter = maxWidth // avgLetterWidth
 
             wrapper = textwrap.TextWrapper(width=maxLetter)
             self.text = wrapper.fill(self.text)
+
+            print('Wrapped text "{}" (original size={}x{}, avg letter width={}, max letters={})'.format(self.text, width, height, avgLetterWidth, maxLetter))
             width, height = self.draw.textsize(
                 self.text, self.font, spacing=self.lineSpacing)
 
         height = height + self.margin[0] + self.margin[1]
+        print ('Text size: {}x{} (margin={}'.format(width, height, self.margin))
         return width, height
 
-    def draw(self, x, y, width):
+    def drawText(self, x, y, width):
+        if len(self.text) == 0:
+            return
+
         posX = x + self._posX(width)
         posY = y + self.margin[0]
-        self._draw.text((posX, posY), self.text, font=self.font,
+        self.draw.text((posX, posY), self.text, font=self.font,
                         fill=self.color, align=self.align, spacing=self.lineSpacing)
 
     def _posX(self, width):
@@ -82,7 +91,7 @@ class TextImage:
                           self._valign) + self._margin
 
         for txt in self._texts:
-            txt.draw(posX, posY, self._innerWidth)
+            txt.drawText(posX, posY, self._innerWidth)
             posY += txt.height
         return self._image
 
