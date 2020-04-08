@@ -3,7 +3,6 @@
 import argparse
 import configparser
 import signal
-import sys
 
 from gi.repository import GLib
 from dbus.mainloop.glib import DBusGMainLoop
@@ -11,12 +10,13 @@ from dbus.mainloop.glib import DBusGMainLoop
 from .buttons import Buttons, Button
 from .display import Display
 from .mpris import MPRIS
-from .screens import ArtworkScreen, NowPlayingInfoScreen
+from .screens import ArtworkScreen, NowPlayingInfoScreen, GifScreen
 
 
 DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
 
 DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-unsplash.png'
+DEFAULT_GIF_PATH = '/usr/share/pidi-mpris/images/deployrainbows.gif'
 DEFAULT_FONT_PATH = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
 
 
@@ -40,7 +40,9 @@ class Player:
 
         self._screens = [
             ArtworkScreen(self._conf, self._display, self._mprisPlayer),
-            NowPlayingInfoScreen(self._conf, self._display, self._mprisPlayer)]
+            NowPlayingInfoScreen(self._conf, self._display, self._mprisPlayer),
+            GifScreen(self._conf, self._display)
+        ]
         self._activeScreenIndex = 0
         self._activeScreen = self._screens[self._activeScreenIndex]
         self._activeScreen.activate()
@@ -102,6 +104,7 @@ def read_conf(conf_file):
     conf.read_dict({
         'DEFAULT': {
             'default_image': DEFAULT_IMAGE_PATH,
+            'default_gif': DEFAULT_GIF_PATH,
             'default_font': DEFAULT_FONT_PATH,
             'default_font_size': 30},
         'NowPlayingInfoScreen': {

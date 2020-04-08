@@ -18,6 +18,7 @@ setup(name='pidi-mpris',
       data_files=[
           ('/usr/share/pidi-mpris/images', [
               'data/images/luana-de-marco-PF1l1F1hzoU-unsplash.png',
+              'data/images/deployrainbows.gif',
               'data/images/LICENSE.txt'
           ]),
           ('/usr/share/pidi-mpris/fonts/OpenSans', [

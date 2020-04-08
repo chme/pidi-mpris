@@ -1,28 +1,60 @@
 
-from PIL import ImageFont
+from PIL import Image, ImageFont
+import threading
 
 from .buttons import Button
-from .display import Display, TextImage
-from .mpris import MPRIS
+from .display import TextImage
 
 
 class Screen:
 
-    def activate(self) -> None:
+    def activate(self):
         pass
 
-    def deactivate(self) -> None:
+    def deactivate(self):
         pass
 
-    def onButtonPressed(self, button: Button) -> None:
+    def onButtonPressed(self, button):
         pass
 
-    def onPlayerUpdate(self) -> None:
+    def onPlayerUpdate(self):
         pass
+
+
+class GifScreen(Screen):
+    def __init__(self, conf, display):
+        self._display = display
+        self._conf = conf
+
+        self._defaultImage = conf['DEFAULT']['default_gif']
+        self._irq = threading.Event()
+        self._thread = threading.Thread(name='gif', target=self._showGif)
+
+    def activate(self):
+        self._thread.start()
+
+    def deactivate(self):
+        self._irq.set()
+        self._thread.join()
+
+    def _showGif(self):
+        self._irq.clear()
+        image = Image.open(self._defaultImage)
+
+        run = True
+        frame = 0
+        while run:
+            try:
+                image.seek(frame)
+                self._display.image(image)
+                frame += 1
+                run = not self._irq.wait(0.05)
+            except EOFError:
+                frame = 0
 
 
 class NowPlayingInfoScreen(Screen):
-    def __init__(self, conf: dict, display: Display, mprisPlayer: MPRIS) -> None:
+    def __init__(self, conf, display, mprisPlayer):
         self._display = display
         self._mprisPlayer = mprisPlayer
         self._conf = conf
@@ -47,13 +79,13 @@ class NowPlayingInfoScreen(Screen):
 
         self._txtImage = TextImage(self._display.width, self._display.height)
 
-    def activate(self) -> None:
+    def activate(self):
         self._showInfo()
 
-    def deactivate(self) -> None:
+    def deactivate(self):
         pass
 
-    def onButtonPressed(self, button: Button) -> None:
+    def onButtonPressed(self, button):
         if button == Button.A:
             self._mprisPlayer.previous()
         elif button == Button.X:
@@ -61,7 +93,7 @@ class NowPlayingInfoScreen(Screen):
         elif button == Button.Y:
             self._mprisPlayer.playPause()
 
-    def onPlayerUpdate(self) -> None:
+    def onPlayerUpdate(self):
         self._showInfo()
 
     def _showInfo(self):
@@ -80,19 +112,19 @@ class NowPlayingInfoScreen(Screen):
 
 
 class ArtworkScreen(Screen):
-    def __init__(self, conf: dict, display: Display, mprisPlayer: MPRIS) -> None:
+    def __init__(self, conf, display, mprisPlayer):
         self._defaultImage = conf['DEFAULT']['default_image']
         self._display = display
         self._mprisPlayer = mprisPlayer
         self._artUrl = None
 
-    def activate(self) -> None:
+    def activate(self):
         self._showArtwork()
 
-    def deactivate(self) -> None:
+    def deactivate(self):
         self._artUrl = None
 
-    def onButtonPressed(self, button: Button) -> None:
+    def onButtonPressed(self, button):
         if button == Button.A:
             self._mprisPlayer.previous()
         elif button == Button.X:
@@ -100,7 +132,7 @@ class ArtworkScreen(Screen):
         elif button == Button.Y:
             self._mprisPlayer.playPause()
 
-    def onPlayerUpdate(self) -> None:
+    def onPlayerUpdate(self):
         self._showArtwork()
 
     def _showArtwork(self):
