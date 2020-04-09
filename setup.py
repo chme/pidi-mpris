@@ -12,7 +12,7 @@ setup(name='pidi-mpris',
       ],
       entry_points={
           'console_scripts': [
-              'pidi-mpris=pidi_mpris.player:main'
+              'pidi-mpris=pidi_mpris.main:main'
           ]
       },
       data_files=[
