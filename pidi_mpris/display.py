@@ -1,8 +1,12 @@
 
+import logging
 import textwrap
 
 from PIL import Image, ImageDraw
 import ST7789 as ST7789
+
+
+log = logging.getLogger(__name__)
 
 
 class Text:
@@ -31,12 +35,13 @@ class Text:
             wrapper = textwrap.TextWrapper(width=maxLetter)
             self.text = wrapper.fill(self.text)
 
-            print('Wrapped text "{}" (original size={}x{}, avg letter width={}, max letters={})'.format(self.text, width, height, avgLetterWidth, maxLetter))
+            log.debug('Wrapped text "%s" (original size=%sx%s, avg letter width=%s, max letters=%s)',
+                      self.text, width, height, avgLetterWidth, maxLetter)
             width, height = self.draw.textsize(
                 self.text, self.font, spacing=self.lineSpacing)
 
         height = height + self.margin[0] + self.margin[1]
-        print ('Text size: {}x{} (margin={}'.format(width, height, self.margin))
+        log.debug('Text size: %sx%s (margin=%s)', width, height, self.margin)
         return width, height
 
     def drawText(self, x, y, width):
@@ -46,7 +51,7 @@ class Text:
         posX = x + self._posX(width)
         posY = y + self.margin[0]
         self.draw.text((posX, posY), self.text, font=self.font,
-                        fill=self.color, align=self.align, spacing=self.lineSpacing)
+                       fill=self.color, align=self.align, spacing=self.lineSpacing)
 
     def _posX(self, width):
         if self.align == 'left':
@@ -130,6 +135,6 @@ class Display:
         image = image.resize((self.disp.width, self.disp.height))
 
         # Draw the image on the display hardware.
-        print('Drawing image')
+        log.debug('Drawing image %s', imageFile)
 
         self.disp.display(image)

@@ -67,7 +67,7 @@ def read_conf(args):
             'line4_font': '${default_font}',
             'line4_font_size': '${default_font_size}}'},
         'GENERAL': {
-            'log_level': 'WARNING',
+            'log_level': 'INFO',
             'log_filename': ''}
     })
     conf.read(confFile)
@@ -110,7 +110,7 @@ def main():
     player = Player(args.mpris, conf)
     player.init()
 
-    log.info('Init complete, press Ctrl+C to exit')
+    print('Init complete, press Ctrl+C to exit')
 
     signal.signal(signal.SIGINT, end)
 

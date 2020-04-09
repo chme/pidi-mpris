@@ -1,5 +1,9 @@
 
 import dbus
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 class MPRIS:
@@ -32,7 +36,7 @@ class MPRIS:
         if not name.startswith(MPRIS.BUS_NAME_PREFIX):
             return
 
-        print('NameOwnerChange: {}/{}/{}'.format(name, _oldOwner, newOwner))
+        log.debug('NameOwnerChange: %s/%s/%s', name, _oldOwner, newOwner)
 
         if self.connectedBus:
             if not newOwner and name == self.connectedBus:
@@ -50,7 +54,7 @@ class MPRIS:
     def _find_mpris_bus_name(self, arg_bus_name):
         mpris_players = self._find_available_players()
 
-        print('Available MPRIS players: {}'.format(mpris_players))
+        log.debug('Available MPRIS players: %s', mpris_players)
 
         if arg_bus_name is None:
             if len(mpris_players) > 0:
@@ -62,7 +66,7 @@ class MPRIS:
         return None
 
     def connect(self, busName):
-        print('Connecting to MPRIS player {}'.format(busName))
+        log.info('Connecting to MPRIS player %s', busName)
 
         self.mpris = self.bus.get_object(busName, MPRIS.OBJECT_PATH)
         self.properties = dbus.Interface(
@@ -77,7 +81,7 @@ class MPRIS:
         self.connectedBus = busName
 
     def disconnect(self):
-        print('Disconnecting from MPRIS player {}'.format(self.bus_name))
+        log.info('Disconnecting from MPRIS player %s', self.bus_name)
 
         self.mpris = None
         self.properties = None
@@ -129,6 +133,8 @@ class MPRIS:
 def get_bus():
     try:
         bus = dbus.SessionBus()
+        log.info('Connected to DBUS session bus')
     except dbus.exceptions.DBusException:
         bus = dbus.SystemBus()
+        log.info('Connected to DBUS system bus')
     return bus
