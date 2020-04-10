@@ -73,7 +73,7 @@ class Player:
             if secondsPressed < 3 and self._display.status():
                 self._switchToNextScreen()
         else:
-            self._activeScreen._onButtonReleased(button, secondsPressed)
+            self._activeScreen.onButtonReleased(button, secondsPressed)
 
     def _switchToNextScreen(self):
         if len(self._screens) > 1:
