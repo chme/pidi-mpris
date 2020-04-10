@@ -124,6 +124,20 @@ class Display:
 
         self.width = self.disp.width
         self.height = self.disp.height
+        self.backLightOn = True
+
+    def status(self):
+        return self.backLightOn
+
+    def turnOff(self):
+        self.setBacklight(False)
+
+    def turnOn(self):
+        self.setBacklight(True)
+
+    def setBacklight(self, value):
+        self.disp.set_backlight(value)
+        self.backLightOn = value
 
     def image(self, image):
         self.disp.display(image)

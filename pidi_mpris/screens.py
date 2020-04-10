@@ -21,6 +21,12 @@ class Screen:
     def onButtonPressed(self, button):
         pass
 
+    def onButtonLongPress(self, button, secondsPressed):
+        pass
+
+    def onButtonReleased(self, button, secondsPressed):
+        pass
+
     def onPlayerUpdate(self):
         pass
 

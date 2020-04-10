@@ -65,3 +65,29 @@ class Player:
                 self._activeScreen.activate()
         else:
             self._activeScreen.onButtonPressed(button)
+
+    def _onButtonLongPress(self, button, secondsPressed):
+        if button == Button.B:
+            if secondsPressed == 3:
+                log.debug('Long press: %s', self._activeScreenIndex)
+                self._display.turnOff()
+        else:
+            self._activeScreen.onButtonLongPress(button, secondsPressed)
+
+    def _onButtonReleased(self, button, secondsPressed):
+        if button == Button.B:
+            if self._display.status():
+                self._switchToNextScreen()
+        else:
+            self._activeScreen._onButtonReleased(button, secondsPressed)
+
+    def _switchToNextScreen(self):
+        if len(self._screens) > 1:
+            self._activeScreen.deactivate()
+            self._activeScreenIndex = (
+                self._activeScreenIndex + 1) % len(self._screens)
+
+            log.debug('Activate next screen: %s', self._activeScreenIndex)
+
+            self._activeScreen = self._screens[self._activeScreenIndex]
+            self._activeScreen.activate()
