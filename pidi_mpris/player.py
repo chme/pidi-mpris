@@ -26,7 +26,7 @@ class Player:
         log.debug('Initializing buttons: %s', list(Button))
 
         self._buttons = Buttons()
-        self._buttons.setButtonHandler(self._onButtonPressed)
+        self._buttons.onPressedHandler(self._onButtonPressed)
 
         self._screens = [
             ArtworkScreen(self._conf, self._display, self._mprisPlayer),
