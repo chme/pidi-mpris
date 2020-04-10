@@ -41,7 +41,9 @@ class Player:
         self._buttons.cleanup()
 
     def _onPlayerUpdate(self):
-        log.info('Player update: %s/%s/%s, artwork=%s', ','.join(self._mprisPlayer.artist()),
+        log.info('Player update: %s [%s/%s/%s, artwork=%s]',
+                 self._mprisPlayer.playbackStatus(),
+                 ','.join(self._mprisPlayer.artist()),
                  self._mprisPlayer.album(),
                  self._mprisPlayer.title(),
                  self._mprisPlayer.artUrl())

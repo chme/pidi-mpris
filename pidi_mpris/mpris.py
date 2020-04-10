@@ -1,9 +1,16 @@
 
 import dbus
+from enum import Enum
 import logging
 
 
 log = logging.getLogger(__name__)
+
+
+class PlaybackStatus(Enum):
+    PLAYING = 'Playing'
+    PAUSED = 'Paused'
+    STOPPED = 'Stopped'
 
 
 class MPRIS:
@@ -18,7 +25,9 @@ class MPRIS:
         self.mpris = None
         self.properties = None
         self.interface = None
+
         self.metadata = {}
+        self.status = PlaybackStatus.STOPPED
 
         self.bus = get_bus()
         self.busObject = self.bus.get_object("org.freedesktop.DBus",
@@ -74,6 +83,8 @@ class MPRIS:
         self.interface = dbus.Interface(self.mpris, MPRIS.INTERFACE_PLAYER)
         self.metadata = self.mpris.Get(
             MPRIS.INTERFACE_PLAYER, 'Metadata', dbus_interface=MPRIS.INTERFACE_PROPERTIES)
+        self.status = PlaybackStatus(self.mpris.Get(
+            MPRIS.INTERFACE_PLAYER, 'PlaybackStatus', dbus_interface=MPRIS.INTERFACE_PROPERTIES))
 
         self.properties.connect_to_signal(
             'PropertiesChanged', self.propertiesChanged)
@@ -91,13 +102,27 @@ class MPRIS:
         self.connectedBus = None
 
     def propertiesChanged(self, *args):
-        if len(args) > 1 and args[0] == MPRIS.INTERFACE_PLAYER and 'Metadata' in args[1]:
+        if len(args) <= 1 or args[0] != MPRIS.INTERFACE_PLAYER:
+            return
+
+        hasChanges = False
+        if 'Metadata' in args[1]:
             self.metadata = args[1]['Metadata']
-            if self.updateHandler:
-                self.updateHandler()
+            hasChanges = True
+
+        if 'PlaybackStatus' in args[1]:
+            self.status = PlaybackStatus(args[1]['PlaybackStatus'])
+            hasChanges = True
+
+        log.debug('DBUS property changes %s (%s)', hasChanges, args[1])
+        if hasChanges and self.updateHandler:
+            self.updateHandler()
 
     def setUpdateHandler(self, cb):
         self.updateHandler = cb
+
+    def playbackStatus(self):
+        return self.status
 
     def playPause(self):
         if self.interface:
