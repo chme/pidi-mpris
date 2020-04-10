@@ -1,4 +1,5 @@
 
+import csv
 import logging
 from PIL import Image, ImageFont
 import threading
@@ -35,9 +36,12 @@ class Screen:
 class GifScreen(Screen):
     def __init__(self, conf, display):
         self._display = display
-        self._conf = conf
+        self._conf = conf['GifScreen']
 
-        self._defaultImage = conf['DEFAULT']['default_gif']
+        self._images = csv.reader(self._conf['image'])
+        self._activeImage = 0
+        self._numImages = len(self._images)
+
         self._irq = threading.Event()
         self._thread = threading.Thread(name='gif', target=self._showGif)
 
@@ -51,8 +55,15 @@ class GifScreen(Screen):
         self._thread.join()
         self._thread = None
 
+    def onButtonPressed(self, button):
+        if button == Button.Y:
+            if self._numImages > 1:
+                self.deactivate()
+                self._activeImage = self._activeImage + 1 % self._numImages
+                self.activate()
+
     def _showGif(self):
-        image = Image.open(self._defaultImage)
+        image = Image.open(self._images[self._activeImage])
 
         run = True
         frame = 0

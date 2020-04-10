@@ -14,7 +14,7 @@ from .player import Player
 DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
 
 DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-unsplash.png'
-DEFAULT_GIF_PATH = '/usr/share/pidi-mpris/images/deployrainbows.gif'
+GIF_IMAGE = '/usr/share/pidi-mpris/images/deployrainbows.gif'
 
 FONT_FACE_REGULAR = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
 FONT_FACE_BOLD = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Bold.ttf'
@@ -93,6 +93,8 @@ def read_conf(args):
             'line4_font_face': '${font_face_regular}',
             'line4_font_size': '${font_size_small}',
             'line4_font_color': '${font_color_muted}'},
+        'GifScreen': {
+            'image': GIF_IMAGE},
         'GENERAL': {
             'log_level': 'INFO',
             'log_filename': ''}
