@@ -29,6 +29,7 @@ class Player:
         log.debug('Initializing display')
 
         self._display = Display()
+        self._display.turnOn()
 
         log.debug('Initializing buttons: %s', list(Button))
 

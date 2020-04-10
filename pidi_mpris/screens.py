@@ -61,7 +61,7 @@ class GifScreen(Screen):
         if button == Button.Y:
             if self._numImages > 1:
                 self.deactivate()
-                self._activeImage = self._activeImage + 1 % self._numImages
+                self._activeImage = (self._activeImage + 1) % self._numImages
                 self.activate()
 
     def _showGif(self):
