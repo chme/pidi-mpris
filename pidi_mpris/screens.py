@@ -93,6 +93,8 @@ class NowPlayingInfoScreen(Screen):
         self._colors.append(color_hex_to_rgb(self._conf['line3_font_color']))
         self._colors.append(color_hex_to_rgb(self._conf['line4_font_color']))
 
+        log.debug('Text colors: %s', self._colors)
+
         self._texts = []
         self._texts.append(self._conf['line1_text'])
         self._texts.append(self._conf['line2_text'])
