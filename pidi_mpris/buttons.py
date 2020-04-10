@@ -28,6 +28,7 @@ class Buttons:
     def __init__(self):
         self.buttonHandler = None
         self.bouncetime = 300
+        self.bouncetimeInSeconds = self.bouncetime / 1000
         self.lastEventTime = 0
 
         # Set up RPi.GPIO with the "BCM" numbering scheme
@@ -53,12 +54,8 @@ class Buttons:
     def onReleasedHandler(self, cb):
         self.onReleased = cb
 
-    def _onButtonPressed(self, pin):
-        if self.buttonHandler:
-            self.buttonHandler(Button(pin))
-
     def onButtonPressed(self, pin):
-        if time() - self.lastEventTime < self.bouncetime:
+        if time() - self.lastEventTime < self.bouncetimeInSeconds:
             log.debug('Ignoring button press on %s (bouncetime)', pin)
             return
 
@@ -68,17 +65,18 @@ class Buttons:
         if self.onPressed:
             self.onPressed(button)
 
-        self.lastButtonPressedTime = time()
+        self.lastEventTime = time()
 
         i = 0
         secondsPressed = 0
-        while GPIO.input(self.pin) == GPIO.LOW:
+        while GPIO.input(pin) == GPIO.LOW:
             self.lastEventTime = time()
             sleep(0.1)
             i = i + 1
 
             if i % 10 == 0:
                 secondsPressed = secondsPressed + 1
+                log.debug('Button %ss pressed (iteration=%s)', secondsPressed, i)
 
                 if self.onLongPress:
                     log.debug('Long button pressed %s (%s s)',
@@ -87,6 +85,6 @@ class Buttons:
 
         self.lastEventTime = time()
 
+        log.debug('Button released %s (%s s)', button, secondsPressed)
         if self.onReleased:
-            log.debug('Button released %s (%s s)', button, secondsPressed)
             self.onReleased(button, secondsPressed)

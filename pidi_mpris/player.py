@@ -70,7 +70,7 @@ class Player:
 
     def _onButtonReleased(self, button, secondsPressed):
         if button == Button.B:
-            if self._display.status():
+            if secondsPressed < 3 and self._display.status():
                 self._switchToNextScreen()
         else:
             self._activeScreen._onButtonReleased(button, secondsPressed)
