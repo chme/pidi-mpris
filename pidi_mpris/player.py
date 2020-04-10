@@ -21,6 +21,8 @@ class Player:
         self._interval = int(self._conf['GENERAL']['turn_off_when_inactive'])
         self._inactive = False
 
+        log.debug('Turn display off after %ss of inactivity', self._interval)
+
         self._mprisPlayer = MPRIS(self._busName)
         self._mprisPlayer.setUpdateHandler(self._onPlayerUpdate)
 
@@ -48,6 +50,10 @@ class Player:
 
     def deinit(self):
         self._buttons.cleanup()
+        if self._timer:
+            self._timer.cancel()
+            self._timer = None
+        self._display.turnOff()
 
     def _resetInactivityTimer(self):
         if self._interval <= 0:
@@ -57,14 +63,16 @@ class Player:
             self._timer.cancel()
             self._timer = None
 
-        if self._mprisPlayer.playbackStatus() != PlaybackStatus.PLAYING:
-            self._timer = threading.Timer(
-                self._interval, self._onInactivityTimeout)
-
         inactive = self._inactive
         if self._inactive:
             self._inactive = False
             self._display.turnOn()
+
+        if self._mprisPlayer.playbackStatus() != PlaybackStatus.PLAYING:
+            log.debug('Start inactivity timer')
+            self._timer = threading.Timer(
+                self._interval, self._onInactivityTimeout)
+            self._timer.start()
 
         return inactive
 
@@ -72,12 +80,14 @@ class Player:
         if self._interval <= 0 or not self._timer:
             return
 
+        log.debug('Cancel inactivity timer')
+
         self._timer.cancel()
         self._timer = None
 
     def _onInactivityTimeout(self):
+        log.debug('Turning display off')
         self._timer = None
-
         self._inactive = True
         self._display.turnOff()
 
