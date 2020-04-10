@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 
 class Text:
-    def __init__(self, text, font, imageDraw, maxWidth=None, align='center', lineSpacing=4, margin=(2, 2), color=(255, 255, 255)):
+    def __init__(self, text, font, imageDraw, maxWidth=None, align='center', lineSpacing=4, margin=(4, 4), color=(255, 255, 255)):
         self.text = text
         self.font = font
         self.draw = imageDraw
