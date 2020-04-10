@@ -1,9 +1,13 @@
 
+import logging
 from PIL import Image, ImageFont
 import threading
 
 from .buttons import Button
 from .display import TextImage
+
+
+log = logging.getLogger(__name__)
 
 
 class Screen:
@@ -80,7 +84,7 @@ class NowPlayingInfoScreen(Screen):
         self._texts.append(conf['NowPlayingInfoScreen']['line3_text'])
         self._texts.append(conf['NowPlayingInfoScreen']['line4_text'])
 
-        print(self._texts)
+        log.debug(self._texts)
 
         self._txtImage = TextImage(self._display.width, self._display.height)
 
@@ -109,7 +113,7 @@ class NowPlayingInfoScreen(Screen):
         title = self._mprisPlayer.title()
         for i, t in enumerate(self._texts):
             if len(t) > 0:
-                print(t.format(artist=artist, album=album, title=title))
+                log.debug(t.format(artist=artist, album=album, title=title))
                 self._txtImage.add(
                     t.format(artist=artist, album=album, title=title), self._fonts[i])
 
