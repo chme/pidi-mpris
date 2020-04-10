@@ -64,7 +64,6 @@ def read_conf(args):
     conf.read_dict({
         'DEFAULT': {
             'default_image': DEFAULT_IMAGE_PATH,
-            'default_gif': DEFAULT_GIF_PATH,
             'font_face_regular': FONT_FACE_REGULAR,
             'font_face_bold': FONT_FACE_BOLD,
             'font_face_italic': FONT_FACE_ITALIC,

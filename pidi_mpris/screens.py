@@ -38,7 +38,8 @@ class GifScreen(Screen):
         self._display = display
         self._conf = conf['GifScreen']
 
-        self._images = csv.reader(self._conf['image'])
+        parser = csv.reader(self._conf['image'])
+        self._images = [item for sublist in parser for item in sublist]
         self._activeImage = 0
         self._numImages = len(self._images)
 
