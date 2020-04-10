@@ -27,6 +27,8 @@ class Player:
 
         self._buttons = Buttons()
         self._buttons.onPressedHandler(self._onButtonPressed)
+        self._buttons.onLongPressHandler(self._onButtonLongPress)
+        self._buttons.onReleasedHandler(self._onButtonReleased)
 
         self._screens = [
             ArtworkScreen(self._conf, self._display, self._mprisPlayer),
@@ -54,15 +56,7 @@ class Player:
         log.debug('Button press detected: %s', button)
 
         if button == Button.B:
-            if len(self._screens) > 1:
-                self._activeScreen.deactivate()
-                self._activeScreenIndex = (
-                    self._activeScreenIndex + 1) % len(self._screens)
-
-                log.debug('Activate next screen: %s', self._activeScreenIndex)
-
-                self._activeScreen = self._screens[self._activeScreenIndex]
-                self._activeScreen.activate()
+            pass
         else:
             self._activeScreen.onButtonPressed(button)
 
@@ -70,7 +64,7 @@ class Player:
         if button == Button.B:
             if secondsPressed == 3:
                 log.debug('Long press: %s', self._activeScreenIndex)
-                self._display.turnOff()
+                self._display.setBacklight(not self._display.status())
         else:
             self._activeScreen.onButtonLongPress(button, secondsPressed)
 
