@@ -82,7 +82,7 @@ def read_conf(args):
             'line1_font_size': '${font_size_normal}',
             'line1_font_color': '${font_color_default}',
             'line2_text': '{title}',
-            'line2_font_face': '${font_face_regular}',
+            'line2_font_face': '${font_face_bold}',
             'line2_font_size': '${font_size_normal}',
             'line2_font_color': '${font_color_primary}',
             'line3_text': '{album}',
