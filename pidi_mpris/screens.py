@@ -5,6 +5,7 @@ import threading
 
 from .buttons import Button
 from .display import TextImage
+from .util import color_hex_to_rgb
 
 
 log = logging.getLogger(__name__)
@@ -72,27 +73,36 @@ class NowPlayingInfoScreen(Screen):
     def __init__(self, conf, display, mprisPlayer):
         self._display = display
         self._mprisPlayer = mprisPlayer
-        self._conf = conf
+        self._conf = conf['NowPlayingInfoScreen']
 
         self._fonts = []
-        self._fonts.append(ImageFont.truetype(conf['NowPlayingInfoScreen']['line1_font'], int(
-            conf['NowPlayingInfoScreen']['line1_font_size'])))
-        self._fonts.append(ImageFont.truetype(conf['NowPlayingInfoScreen']['line2_font'], int(
-            conf['NowPlayingInfoScreen']['line2_font_size'])))
-        self._fonts.append(ImageFont.truetype(conf['NowPlayingInfoScreen']['line3_font'], int(
-            conf['NowPlayingInfoScreen']['line3_font_size'])))
-        self._fonts.append(ImageFont.truetype(conf['NowPlayingInfoScreen']['line4_font'], int(
-            conf['NowPlayingInfoScreen']['line4_font_size'])))
+        self._fonts.append(ImageFont.truetype(
+            self._conf['line1_font_face'], int(self._conf['line1_font_size'])))
+        self._fonts.append(ImageFont.truetype(
+            self._conf['line2_font_face'], int(self._conf['line2_font_size'])))
+        self._fonts.append(ImageFont.truetype(
+            self._conf['line3_font_face'], int(self._conf['line3_font_size'])))
+        self._fonts.append(ImageFont.truetype(
+            self._conf['line4_font_face'], int(self._conf['line4_font_size'])))
+
+        self._bgColor = color_hex_to_rgb(self._conf['background'])
+
+        self._colors = []
+        self._colors.append(color_hex_to_rgb(self._conf['line1_font_color']))
+        self._colors.append(color_hex_to_rgb(self._conf['line2_font_color']))
+        self._colors.append(color_hex_to_rgb(self._conf['line3_font_color']))
+        self._colors.append(color_hex_to_rgb(self._conf['line4_font_color']))
 
         self._texts = []
-        self._texts.append(conf['NowPlayingInfoScreen']['line1_text'])
-        self._texts.append(conf['NowPlayingInfoScreen']['line2_text'])
-        self._texts.append(conf['NowPlayingInfoScreen']['line3_text'])
-        self._texts.append(conf['NowPlayingInfoScreen']['line4_text'])
+        self._texts.append(self._conf['line1_text'])
+        self._texts.append(self._conf['line2_text'])
+        self._texts.append(self._conf['line3_text'])
+        self._texts.append(self._conf['line4_text'])
 
-        log.debug(self._texts)
+        log.debug('Text templates: %s', self._texts)
 
-        self._txtImage = TextImage(self._display.width, self._display.height)
+        self._txtImage = TextImage(
+            self._display.width, self._display.height, bgColor=self._bgColor)
 
     def activate(self):
         self._showInfo()
@@ -121,7 +131,7 @@ class NowPlayingInfoScreen(Screen):
             if len(t) > 0:
                 log.debug(t.format(artist=artist, album=album, title=title))
                 self._txtImage.add(
-                    t.format(artist=artist, album=album, title=title), self._fonts[i])
+                    t.format(artist=artist, album=album, title=title), self._fonts[i], color=self._colors[i])
 
         self._display.image(self._txtImage.draw())
 

@@ -15,7 +15,20 @@ DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
 
 DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-unsplash.png'
 DEFAULT_GIF_PATH = '/usr/share/pidi-mpris/images/deployrainbows.gif'
-DEFAULT_FONT_PATH = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
+
+FONT_FACE_REGULAR = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
+FONT_FACE_BOLD = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Bold.ttf'
+FONT_FACE_ITALIC = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Italic.ttf'
+
+FONT_SIZE_SMALL = 20
+FONT_SIZE_NORMAL = 25
+FONT_SIZE_LARGE = 30
+
+FONT_COLOR_DEFAULT = '#FFFFFF'
+FONT_COLOR_PRIMARY = '#EBFFFC'
+FONT_COLOR_MUTED = '#F5F5F5'
+
+BACKGROUND_COLOR = '#000000'
 
 
 def end(_signal, _frame):
@@ -47,25 +60,39 @@ def read_conf(args):
     confFile = args.conf
     conf = configparser.ConfigParser(
         interpolation=configparser.ExtendedInterpolation())
+
     conf.read_dict({
         'DEFAULT': {
             'default_image': DEFAULT_IMAGE_PATH,
             'default_gif': DEFAULT_GIF_PATH,
-            'default_font': DEFAULT_FONT_PATH,
-            'default_font_size': 30},
+            'font_face_regular': FONT_FACE_REGULAR,
+            'font_face_bold': FONT_FACE_BOLD,
+            'font_face_italic': FONT_FACE_ITALIC,
+            'font_size_small': FONT_SIZE_SMALL,
+            'font_size_normal': FONT_SIZE_NORMAL,
+            'font_size_large': FONT_SIZE_LARGE,
+            'font_color_default': FONT_COLOR_DEFAULT,
+            'font_color_primary': FONT_COLOR_PRIMARY,
+            'font_color_muted': FONT_COLOR_MUTED,
+            'background_color': BACKGROUND_COLOR},
         'NowPlayingInfoScreen': {
-            'line1_text': '%artist%',
-            'line1_font': '${default_font}',
-            'line1_font_size': '${default_font_size}',
-            'line2_text': '%title%',
-            'line2_font': '${default_font}',
-            'line2_font_size': '${default_font_size}',
-            'line3_text': '%album%',
-            'line3_font': '${default_font}',
-            'line3_font_size': '${default_font_size}',
+            'background': '${background_color}',
+            'line1_text': '{artist}',
+            'line1_font_face': '${font_face_regular}',
+            'line1_font_size': '${font_size_normal}',
+            'line1_font_color': '${font_color_default}',
+            'line2_text': '{title}',
+            'line2_font_face': '${font_face_regular}',
+            'line2_font_size': '${font_size_normal}',
+            'line2_font_color': '${font_color_primary}',
+            'line3_text': '{album}',
+            'line3_font_face': '${font_face_regular}',
+            'line3_font_size': '${font_size_small}',
+            'line3_font_color': '${font_color_muted}',
             'line4_text': '',
-            'line4_font': '${default_font}',
-            'line4_font_size': '${default_font_size}}'},
+            'line4_font_face': '${font_face_regular}',
+            'line4_font_size': '${font_size_small}',
+            'line4_font_color': '${font_color_muted}'},
         'GENERAL': {
             'log_level': 'INFO',
             'log_filename': ''}

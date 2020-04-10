@@ -63,10 +63,9 @@ class Text:
 
 
 class TextImage:
-    def __init__(self, width, height, color=(255, 255, 255), bgColor=(0, 0, 0), valign='middle', margin=4):
+    def __init__(self, width, height, bgColor=(0, 0, 0), valign='middle', margin=4):
         self._width = width
         self._height = height
-        self._color = color
         self._bgColor = bgColor
         self._valign = valign
         self._margin = margin
@@ -79,9 +78,9 @@ class TextImage:
             'RGB', (self._width, self._height), color=self._bgColor)
         self._draw = ImageDraw.Draw(self._image)
 
-    def add(self, text, font):
+    def add(self, text, font, color=(255, 255, 255)):
         self._texts.append(Text(text, font, self._draw,
-                                maxWidth=self._innerWidth, color=self._color))
+                                maxWidth=self._innerWidth, color=color))
 
     def reset(self):
         self._texts = []
