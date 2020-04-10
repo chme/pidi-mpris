@@ -1,9 +1,10 @@
 
 import logging
+import threading
 
 from .buttons import Buttons, Button
 from .display import Display
-from .mpris import MPRIS
+from .mpris import MPRIS, PlaybackStatus
 from .screens import ArtworkScreen, NowPlayingInfoScreen, GifScreen
 
 
@@ -16,6 +17,10 @@ class Player:
         self._conf = conf
 
     def init(self):
+        self._timer = None
+        self._interval = int(self._conf['GENERAL']['turn_off_when_inactive'])
+        self._inactive = False
+
         self._mprisPlayer = MPRIS(self._busName)
         self._mprisPlayer.setUpdateHandler(self._onPlayerUpdate)
 
@@ -39,8 +44,42 @@ class Player:
         self._activeScreen = self._screens[self._activeScreenIndex]
         self._activeScreen.activate()
 
+        self._resetInactivityTimer()
+
     def deinit(self):
         self._buttons.cleanup()
+
+    def _resetInactivityTimer(self):
+        if self._interval <= 0:
+            return False
+
+        if self._timer:
+            self._timer.cancel()
+            self._timer = None
+
+        if self._mprisPlayer.playbackStatus() != PlaybackStatus.PLAYING:
+            self._timer = threading.Timer(
+                self._interval, self._onInactivityTimeout)
+
+        inactive = self._inactive
+        if self._inactive:
+            self._inactive = False
+            self._display.turnOn()
+
+        return inactive
+
+    def _stopInactivityTimer(self):
+        if self._interval <= 0 or not self._timer:
+            return
+
+        self._timer.cancel()
+        self._timer = None
+
+    def _onInactivityTimeout(self):
+        self._timer = None
+
+        self._inactive = True
+        self._display.turnOff()
 
     def _onPlayerUpdate(self):
         log.info('Player update: %s [%s/%s/%s, artwork=%s]',
@@ -50,10 +89,15 @@ class Player:
                  self._mprisPlayer.title(),
                  self._mprisPlayer.artUrl())
 
+        self._resetInactivityTimer()
+
         self._activeScreen.onPlayerUpdate()
 
     def _onButtonPressed(self, button):
         log.debug('Button press detected: %s', button)
+
+        if self._resetInactivityTimer():
+            return
 
         if button == Button.B:
             pass

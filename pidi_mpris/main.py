@@ -25,8 +25,8 @@ FONT_SIZE_NORMAL = 25
 FONT_SIZE_LARGE = 30
 
 FONT_COLOR_DEFAULT = '#FFFFFF'
-FONT_COLOR_PRIMARY = '#EBFFFC'
-FONT_COLOR_MUTED = '#F5F5F5'
+FONT_COLOR_PRIMARY = '#00D1B2'
+FONT_COLOR_MUTED = '#B5B5B5'
 
 BACKGROUND_COLOR = '#000000'
 
@@ -96,7 +96,8 @@ def read_conf(args):
             'image': GIF_IMAGE},
         'GENERAL': {
             'log_level': 'INFO',
-            'log_filename': ''}
+            'log_filename': '',
+            'turn_off_when_inactive': '60'}
     })
     conf.read(confFile)
 
