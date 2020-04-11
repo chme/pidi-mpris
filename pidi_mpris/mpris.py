@@ -11,6 +11,7 @@ class PlaybackStatus(Enum):
     PLAYING = 'Playing'
     PAUSED = 'Paused'
     STOPPED = 'Stopped'
+    UNKNOWN = 'Unkown'
 
 
 class MPRIS:
@@ -27,7 +28,7 @@ class MPRIS:
         self.interface = None
 
         self.metadata = {}
-        self.status = PlaybackStatus.STOPPED
+        self.status = PlaybackStatus.UNKNOWN
 
         self.bus = get_bus()
         self.busObject = self.bus.get_object("org.freedesktop.DBus",
@@ -83,7 +84,7 @@ class MPRIS:
         self.interface = dbus.Interface(self.mpris, MPRIS.INTERFACE_PLAYER)
         self.metadata = self.mpris.Get(
             MPRIS.INTERFACE_PLAYER, 'Metadata', dbus_interface=MPRIS.INTERFACE_PROPERTIES)
-        self.status = PlaybackStatus(self.mpris.Get(
+        self.status = self.__toPlaybackStatus(self.mpris.Get(
             MPRIS.INTERFACE_PLAYER, 'PlaybackStatus', dbus_interface=MPRIS.INTERFACE_PROPERTIES))
 
         self.properties.connect_to_signal(
@@ -111,7 +112,7 @@ class MPRIS:
             hasChanges = True
 
         if 'PlaybackStatus' in args[1]:
-            self.status = PlaybackStatus(args[1]['PlaybackStatus'])
+            self.status = self.__toPlaybackStatus(args[1]['PlaybackStatus'])
             hasChanges = True
 
         log.debug('DBUS property changes %s (%s)', hasChanges, args[1])
@@ -123,6 +124,12 @@ class MPRIS:
 
     def playbackStatus(self):
         return self.status
+
+    def __toPlaybackStatus(self, propValue):
+        try:
+            return PlaybackStatus(propValue)
+        except ValueError:
+            return PlaybackStatus.UNKNOWN
 
     def playPause(self):
         if self.interface:
