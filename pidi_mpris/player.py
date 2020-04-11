@@ -108,12 +108,14 @@ class Player:
         log.debug('Button press detected: %s', button)
 
         if self._resetInactivityTimer():
-            return
+            return False
 
         if button == Button.B:
             pass
         else:
             self._activeScreen.onButtonPressed(button)
+
+        return True
 
     def _onButtonLongPress(self, button, secondsPressed):
         if button == Button.B:
@@ -122,6 +124,8 @@ class Player:
                 self._display.setBacklight(not self._display.status())
         else:
             self._activeScreen.onButtonLongPress(button, secondsPressed)
+
+        return True
 
     def _onButtonReleased(self, button, secondsPressed):
         if button == Button.B:

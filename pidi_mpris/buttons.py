@@ -62,10 +62,11 @@ class Buttons:
         button = Button(pin)
         log.debug('Button pressed %s', button)
 
-        if self.onPressed:
-            self.onPressed(button)
-
         self.lastEventTime = time()
+
+        if self.onPressed:
+            if not self.onPressed(button):
+                return
 
         i = 0
         secondsPressed = 0
@@ -76,12 +77,14 @@ class Buttons:
 
             if i % 10 == 0:
                 secondsPressed = secondsPressed + 1
-                log.debug('Button %ss pressed (iteration=%s)', secondsPressed, i)
+                log.debug('Button %ss pressed (iteration=%s)',
+                          secondsPressed, i)
 
                 if self.onLongPress:
                     log.debug('Long button pressed %s (%s s)',
                               button, secondsPressed)
-                    self.onLongPress(button, secondsPressed)
+                    if not self.onLongPress(button, secondsPressed):
+                        return
 
         self.lastEventTime = time()
 
