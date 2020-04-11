@@ -1,9 +1,13 @@
 from setuptools import setup
 
 setup(name='pidi-mpris',
-      version='0.0.1',
-      description='MPRIS support for Pirate Audio',
-      install_requires=['dbus-python', 'st7789', 'spidev', 'RPi.GPIO'],
+      version='1.0.0',
+      description='Control MPRIS media players with Pirate Audio Raspberry Pi Hat',
+      author="Christian Meffert",
+      author_email="christian.meffert@googlemail.com",
+      url='https://github.com/chme/pidi-mpris',
+      install_requires=['dbus-python', 'st7789',
+                        'spidev', 'RPi.GPIO', 'pillow', 'numpy'],
       packages=['pidi_mpris'],
       classifiers=[
           "Programming Language :: Python :: 3",
