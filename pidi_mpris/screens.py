@@ -153,7 +153,8 @@ class NowPlayingInfoScreen(Screen):
 
 class ArtworkScreen(Screen):
     def __init__(self, conf, display, mprisPlayer):
-        self._defaultImage = conf['DEFAULT']['default_image']
+        self._conf = conf['ArtworkScreen']
+        self._defaultImage = self._conf['fallback_image']
         self._display = display
         self._mprisPlayer = mprisPlayer
         self._artUrl = None

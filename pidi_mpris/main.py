@@ -13,7 +13,9 @@ from .player import Player
 
 DEFAULT_CONF_FILE_PATH = '/etc/pidi-mpris.conf'
 
-DEFAULT_IMAGE_PATH = '/usr/share/pidi-mpris/images/luana-de-marco-PF1l1F1hzoU-unsplash.png'
+INACTIVITY_TIMEOUT_IN_SEC = 60
+
+ARTWORK_FALLBACK_IMAGE = '/usr/share/pidi-mpris/images/namroud-gorguis-FZWivbri0Xk-unsplash.jpg'
 GIF_IMAGE = '/usr/share/pidi-mpris/images/deployrainbows.gif'
 
 FONT_FACE_REGULAR = '/usr/share/pidi-mpris/fonts/OpenSans/OpenSans-Regular.ttf'
@@ -63,7 +65,6 @@ def read_conf(args):
 
     conf.read_dict({
         'DEFAULT': {
-            'default_image': DEFAULT_IMAGE_PATH,
             'font_face_regular': FONT_FACE_REGULAR,
             'font_face_bold': FONT_FACE_BOLD,
             'font_face_italic': FONT_FACE_ITALIC,
@@ -74,6 +75,13 @@ def read_conf(args):
             'font_color_primary': FONT_COLOR_PRIMARY,
             'font_color_muted': FONT_COLOR_MUTED,
             'background_color': BACKGROUND_COLOR},
+        'GENERAL': {
+            'log_level': 'INFO',
+            'log_filename': '',
+            'turn_off_when_inactive': INACTIVITY_TIMEOUT_IN_SEC},
+        'ArtworkScreen': {
+            'fallback_image': ARTWORK_FALLBACK_IMAGE
+        },
         'NowPlayingInfoScreen': {
             'background': '${background_color}',
             'line1_text': '{artist}',
@@ -93,11 +101,7 @@ def read_conf(args):
             'line4_font_size': '${font_size_small}',
             'line4_font_color': '${font_color_muted}'},
         'GifScreen': {
-            'image': GIF_IMAGE},
-        'GENERAL': {
-            'log_level': 'INFO',
-            'log_filename': '',
-            'turn_off_when_inactive': '60'}
+            'image': GIF_IMAGE}
     })
     conf.read(confFile)
 
@@ -115,7 +119,7 @@ def log_config(conf):
         raise ValueError('Invalid log level: {}'.format(level))
 
     logging.basicConfig(level=level, filename=conf['GENERAL']['log_filename'],
-                        format='%(asctime)s %(levelname)8s [%(name)8s] %(message)s')
+                        format='%(asctime)s %(levelname)8s [%(name)15s] %(message)s')
 
     return logging.getLogger(__name__)
 

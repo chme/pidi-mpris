@@ -17,9 +17,10 @@ setup(name='pidi-mpris',
       },
       data_files=[
           ('/usr/share/pidi-mpris/images', [
-              'data/images/luana-de-marco-PF1l1F1hzoU-unsplash.png',
+              'data/images/namroud-gorguis-FZWivbri0Xk-unsplash.jpg',
+              'data/images/simon-noh-0rmby-3OTeI-unsplash.jpg',
               'data/images/deployrainbows.gif',
-              'data/images/LICENSE.txt'
+              'data/images/LICENSE.md'
           ]),
           ('/usr/share/pidi-mpris/fonts/OpenSans', [
               'data/fonts/OpenSans/OpenSans-Bold.ttf',
